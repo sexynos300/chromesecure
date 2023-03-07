@@ -18,6 +18,11 @@ Public Class Form2
     Private Sub Button2_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button2.Click
         Try
             Using zip As New ZipFile(Form1.TextBox1.Text)
+
+                If Form3.CheckBox3.Checked = True Then
+                    Notify.Show()
+                End If
+
                 Dim ext As ZipEntry
                 For Each ext In zip
                     If (ext.UsesEncryption) Then
@@ -38,7 +43,8 @@ Public Class Form2
                     zip.AddDirectory("cache\" & Form1.TextBox1.Text)
                     zip.Save(Form1.TextBox1.Text)
                 End Using
-        Catch
+            Catch
+
                 MsgBox("Account does not exist! Try another name!")
             End Try
 
@@ -47,8 +53,10 @@ Public Class Form2
             Else
             End If
 
+            Notify.Close()
             MsgBox("Password changed successfully!")
         Catch
+            Notify.Close()
             MsgBox("Wrong password!")
         End Try
 

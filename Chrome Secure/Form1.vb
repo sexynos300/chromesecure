@@ -2,6 +2,8 @@
 
 Public Class Form1
     Private Sub Button2_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button2.Click
+        Form2.Hide()
+        Form3.Hide()
         If IO.Directory.Exists("bin\" & TextBox1.Text) Then
             System.IO.Directory.Delete("bin\" & TextBox1.Text, True) ' Удаляем папку
         Else
@@ -9,6 +11,12 @@ Public Class Form1
 
         Try
             Using zip As New ZipFile(TextBox1.Text)
+
+                If Form3.CheckBox3.Checked = True Then
+                    Notify.Show()
+                End If
+
+
                 Dim ext As ZipEntry
                 For Each ext In zip
                     If (ext.UsesEncryption) Then
@@ -17,6 +25,7 @@ Public Class Form1
                         ext.Extract("bin\" & TextBox1.Text)
                     End If
                 Next
+                Notify.Close()
             End Using
 
             NotifyIcon1.Text = "Chrome is run! To disable, close Chrome!"
@@ -32,6 +41,7 @@ Public Class Form1
                 App.Start()
                 App.WaitForExit()
             Catch
+
                 Dim intReturnValue As Integer
                 intReturnValue = MsgBox("Chrome not found! Please download the official installer (https://www.google.com/chrome) and move the downloaded files to the /bin folder! The program also supports Chromium, it is necessary that the executable file (chrome.exe) be in the /bin folder!", MessageBoxIcon.Stop)
                 If (intReturnValue = MsgBoxResult.Ok) Then
@@ -107,12 +117,18 @@ Public Class Form1
 
             Try
                 Using zip As New ZipFile
+
+                    If Form3.CheckBox3.Checked = True Then
+                        Notify.Show()
+                    End If
+
                     If Form3.ComboBox1.Text = "WinZipAes128" Then zip.Encryption = EncryptionAlgorithm.WinZipAes128
                     If Form3.ComboBox1.Text = "WinZipAes256" Then zip.Encryption = EncryptionAlgorithm.WinZipAes256
                     zip.CompressionLevel = Form3.NumericUpDown1.Value
                     zip.Password = TextBox2.Text
                     zip.AddDirectory("bin\" & TextBox1.Text)
                     zip.Save(TextBox1.Text)
+                    Notify.Close()
                 End Using
             Catch
                 If IO.Directory.Exists("bin\" & TextBox1.Text) Then
@@ -120,6 +136,7 @@ Public Class Form1
                 Else
                 End If
 
+                Notify.Close()
                 MsgBox("It is not possible to process the archive, the process is busy! Data not saved!" & vbCrLf & "The program will be restarted...")
                 Application.Restart()
 
@@ -151,6 +168,7 @@ Public Class Form1
             End If
 
         Catch
+            Notify.Close()
             MsgBox("Wrong password!" & vbCrLf & TextBox4.Text & TextBox3.Text, vbCritical)
         End Try
 
@@ -185,14 +203,22 @@ Public Class Form1
     End Sub
 
     Private Sub Form1_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+
+        Notify.Location = New Point(Screen.PrimaryScreen.WorkingArea.Width - Notify.Width, Screen.PrimaryScreen.WorkingArea.Height - Notify.Height)
+
         Label3.Hide()
         TextBox3.Hide()
         Button3.Hide()
+        Try
+            If IO.Directory.Exists("bin\" & TextBox1.Text) Then
+                System.IO.Directory.Delete("bin\" & TextBox1.Text, True)
+            Else
 
-        If IO.Directory.Exists("bin\" & TextBox1.Text) Then
-            System.IO.Directory.Delete("bin\" & TextBox1.Text, True)
-        Else
-        End If
+            End If
+        Catch
+            MsgBox("Access is denied!", vbCritical)
+        End Try
+
     End Sub
 
     Private Sub PictureBox1_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles PictureBox1.DoubleClick
