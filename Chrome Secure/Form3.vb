@@ -30,6 +30,7 @@ Public Class Form3
         ComboBox1.Text = "None"
         CheckBox1.Checked = False
         CheckBox2.Checked = False
+        CheckBox3.Checked = False
         Form1.TextBox1.Text = "Default"
         Form1.TextBox3.Text = ""
         Form1.TextBox4.Text = ""
